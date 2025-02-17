@@ -12,3 +12,93 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Caregiver {
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
+  recipients Recipient[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Recipient {
+  id          Int          @id @default(autoincrement())
+  name        String
+  caregiver   Caregiver    @relation(fields: [caregiverId], references: [id])
+  caregiverId Int
+  medications Medication[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([caregiverId])
+}
+
+enum FrequencyType {
+  DAILY
+  WEEKLY
+}
+
+model Medication {
+  id                Int           @id @default(autoincrement())
+  name              String
+  dosage            String
+  frequencyType     FrequencyType
+  dailyFrequencies  DailyFrequency[]
+  weeklyFrequencies WeeklyFrequency[]
+  instructions      String?
+  isActive          Boolean       @default(true)
+  recipient         Recipient     @relation(fields: [recipientId], references: [id])
+  recipientId       Int
+  doses             Dose[]
+  startDate         DateTime?
+  endDate           DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([recipientId])
+}
+
+model DailyFrequency {
+  id           Int        @id @default(autoincrement())
+  medication   Medication @relation(fields: [medicationId], references: [id])
+  medicationId Int
+  timeOfDay    Int
+}
+
+model WeeklyFrequency {
+  id           Int        @id @default(autoincrement())
+  medication   Medication @relation(fields: [medicationId], references: [id])
+  medicationId Int
+  dayOfWeek    DayOfWeek
+  timeOfDay    Int
+}
+
+model Dose {
+  id            Int        @id @default(autoincrement())
+  scheduledTime DateTime
+  takenTime     DateTime?
+  status        DoseStatus @default(SCHEDULED)
+  medication    Medication @relation(fields: [medicationId], references: [id])
+  medicationId  Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([medicationId])
+  @@index([scheduledTime]) // Helps with querying upcoming doses
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum DoseStatus {
+  SCHEDULED
+  TAKEN
+  MISSED
+}
