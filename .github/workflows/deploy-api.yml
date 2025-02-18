@@ -1,10 +1,13 @@
-name: Deploy API
+name: Deploy API to AWS Lambda
 
 on:
   push:
     branches: [ main ]
     paths:
       - 'api-svc/**'
+    paths-ignore:
+      - 'api-svc/**/*.md'
+      - 'api-svc/**/*.test.ts'
 
 jobs:
   deploy:
@@ -28,9 +31,41 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Deploy to AWS
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-west-2
-        run: pnpm serverless deploy 
+      - name: Generate Prisma Client
+        run: pnpm prisma generate
+
+      - name: Build TypeScript
+        run: pnpm build
+
+      - name: Create deployment package
+        run: |
+          mkdir -p package
+          cp -r dist package/
+          cp package.json package/
+          cp prisma package/prisma/
+          cd package
+          pnpm install --prod
+          zip -r ../deployment-package.zip .
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name medication-manager-api \
+            --zip-file fileb://deployment-package.zip
+
+      - name: Update Lambda configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name medication-manager-api \
+            --handler dist/lambda.lambdaHandler \
+            --runtime nodejs18.x \
+            --timeout 30 \
+            --memory-size 256 \
+            --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/medication-manager-lambda-role
