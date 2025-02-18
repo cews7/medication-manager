@@ -17,4 +17,4 @@ the project is structured as follows:
 
 We'll be adding more to this file later.
 
-Here is a link to our Trello board: [Medication Manager](https://trello.com/invite/b/67b2535b0b1316efe6a23b95/ATTI915333f4812637e7f09b3a40221d11b4C9D84BC8/medication-manager){:target="_blank"}
+Here is a link to our Trello board: [Medication Manager](https://trello.com/invite/b/67b2535b0b1316efe6a23b95/ATTI915333f4812637e7f09b3a40221d11b4C9D84BC8/medication-manager)

@@ -24,10 +24,11 @@ app.use(express.json());
 
 app.get('/health', async (req, res) => {
   try {
-    // Test database connection
     await prisma.$queryRaw`SELECT 1`;
+    await prisma.$disconnect(); // Clean up connection
     res.json({ status: 'ok', database: 'connected' });
-  } catch (error: any) {  // Type assertion here
+  } catch (error: any) {
+    await prisma.$disconnect(); // Clean up on error too
     res.status(500).json({ 
       status: 'error', 
       database: 'disconnected',
