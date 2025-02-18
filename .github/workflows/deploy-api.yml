@@ -69,7 +69,12 @@ jobs:
             aws lambda update-function-code \
               --function-name medication-manager-api \
               --zip-file fileb://deployment-package.zip
+
+            echo "Waiting for update to complete..."
+            aws lambda wait function-updated \
+              --function-name medication-manager-api
             
+            echo "Updating function configuration..."
             aws lambda update-function-configuration \
               --function-name medication-manager-api \
               --handler dist/lambda.lambdaHandler \
