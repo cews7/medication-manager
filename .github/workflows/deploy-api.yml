@@ -51,18 +51,29 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
-      - name: Deploy to Lambda
+      - name: Create or update Lambda
         run: |
-          aws lambda update-function-code \
-            --function-name medication-manager-api \
-            --zip-file fileb://deployment-package.zip
-
-      - name: Update Lambda configuration
-        run: |
-          aws lambda update-function-configuration \
-            --function-name medication-manager-api \
-            --handler dist/lambda.lambdaHandler \
-            --runtime nodejs18.x \
-            --timeout 30 \
-            --memory-size 256 \
-            --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/medication-manager-lambda-role
+          if ! aws lambda get-function --function-name medication-manager-api &>/dev/null; then
+            echo "Creating new Lambda function..."
+            aws lambda create-function \
+              --function-name medication-manager-api \
+              --runtime nodejs18.x \
+              --handler dist/lambda.lambdaHandler \
+              --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/medication-manager-lambda-role \
+              --zip-file fileb://deployment-package.zip \
+              --timeout 30 \
+              --memory-size 256
+          else
+            echo "Updating existing Lambda function..."
+            aws lambda update-function-code \
+              --function-name medication-manager-api \
+              --zip-file fileb://deployment-package.zip
+            
+            aws lambda update-function-configuration \
+              --function-name medication-manager-api \
+              --handler dist/lambda.lambdaHandler \
+              --runtime nodejs18.x \
+              --timeout 30 \
+              --memory-size 256 \
+              --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/medication-manager-lambda-role
+          fi
