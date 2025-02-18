@@ -37,7 +37,7 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir -p package
-          cp -r dist package/
+          cp -r dist/* package/
           cp package.json package/
           cp -r prisma package/
           cd package
@@ -58,7 +58,7 @@ jobs:
             aws lambda create-function \
               --function-name medication-manager-api \
               --runtime nodejs18.x \
-              --handler dist/lambda.lambdaHandler \
+              --handler lambda.lambdaHandler \
               --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/medication-manager-lambda-role \
               --zip-file fileb://deployment-package.zip \
               --timeout 30 \
@@ -77,7 +77,7 @@ jobs:
             echo "Updating function configuration..."
             aws lambda update-function-configuration \
               --function-name medication-manager-api \
-              --handler dist/lambda.lambdaHandler \
+              --handler lambda.lambdaHandler \
               --runtime nodejs18.x \
               --timeout 30 \
               --memory-size 256 \

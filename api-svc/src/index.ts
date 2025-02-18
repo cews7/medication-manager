@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? 'https://your-netlify-app-name.netlify.app'  // Update this with your Netlify domain
+    ? 'https://medication-manager.netlify.app'  // Update this with your Netlify domain
     : 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],

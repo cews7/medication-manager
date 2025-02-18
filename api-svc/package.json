@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && cp package.json dist/",
     "start": "node dist/index.js"
   },
   "keywords": [],
@@ -14,21 +14,19 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.3.1",
+    "aws-serverless-express": "^3.4.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "pg": "^8.13.3",
-    "serverless-http": "^3.2.0"
+    "pg": "^8.13.3"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.147",
+    "@types/aws-serverless-express": "^3.3.10",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.4",
     "nodemon": "^3.1.9",
     "prisma": "^6.3.1",
-    "serverless": "^4.6.3",
-    "serverless-offline": "^14.4.0",
-    "serverless-plugin-typescript": "^2.1.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
