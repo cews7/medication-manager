@@ -36,13 +36,30 @@ jobs:
 
       - name: Create deployment package
         run: |
+          # Create a clean deployment directory
           mkdir -p package
+          
+          # Copy only the necessary files
           cp -r dist/* package/
           cp package.json package/
-          cp -r prisma package/
+          
+          # Create minimal prisma directory
+          mkdir -p package/prisma
+          cp prisma/schema.prisma package/prisma/
+          
           cd package
+          
+          # Install only production dependencies
           pnpm install --prod --no-lockfile
+          
+          # Generate prisma client
           pnpm prisma generate
+          
+          # Remove unnecessary files
+          rm -rf node_modules/@prisma/engines
+          rm -rf node_modules/prisma
+          
+          # Create optimized zip
           zip -r ../deployment-package.zip .
 
       - name: Configure AWS credentials

@@ -17,7 +17,7 @@ const corsOptions = {
   credentials: true,
 };
 
-// trigger build with a comment here
+// trigger build with comment
 
 app.use(cors(corsOptions));
 app.use(express.json());
