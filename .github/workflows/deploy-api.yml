@@ -39,7 +39,7 @@ jobs:
           mkdir -p package
           cp -r dist package/
           cp package.json package/
-          cp prisma package/prisma/
+          cp -r prisma package/
           cd package
           pnpm install --prod
           zip -r ../deployment-package.zip .
@@ -62,7 +62,8 @@ jobs:
               --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/medication-manager-lambda-role \
               --zip-file fileb://deployment-package.zip \
               --timeout 30 \
-              --memory-size 256
+              --memory-size 256 \
+              --environment "Variables={DATABASE_URL=${{ secrets.DATABASE_URL }},NODE_ENV=production}"
           else
             echo "Updating existing Lambda function..."
             aws lambda update-function-code \
@@ -75,5 +76,6 @@ jobs:
               --runtime nodejs18.x \
               --timeout 30 \
               --memory-size 256 \
-              --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/medication-manager-lambda-role
+              --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/medication-manager-lambda-role \
+              --environment "Variables={DATABASE_URL=${{ secrets.DATABASE_URL }},NODE_ENV=production}"
           fi
