@@ -42,6 +42,7 @@ jobs:
           cp -r prisma package/
           cd package
           pnpm install --prod --no-lockfile
+          pnpm prisma generate
           zip -r ../deployment-package.zip .
 
       - name: Configure AWS credentials
