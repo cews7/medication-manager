@@ -10,7 +10,11 @@
     "skipLibCheck": true,
     "allowJs": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "./*": ["src/*"]
+    }
   },
   "ts-node": {
     "esm": true
