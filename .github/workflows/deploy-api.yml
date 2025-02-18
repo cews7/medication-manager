@@ -39,9 +39,9 @@ jobs:
           mkdir -p package
           cp -r dist package/
           cp package.json package/
-          cp -r node_modules package/
           cp -r prisma package/
           cd package
+          pnpm install --prod --no-lockfile
           zip -r ../deployment-package.zip .
 
       - name: Configure AWS credentials
